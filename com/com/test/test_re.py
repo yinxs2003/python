@@ -20,15 +20,18 @@ try:
     headers = {'User-Agent': user_agent}
     content = urllib2.urlopen(urllib2.Request(url, headers=headers)).read()
     # content = re.sub(r'<br/>', '', str(content))
-    content = re.sub(r'<a class=\"contentHerf\" href=\"/article/\d\" target=\"_blank\">', '', str(content))
+    content = re.sub(r'^<div class=.*>$>', '', str(content))
     content = re.sub(r'<span>', '', str(content))
     content = re.sub(r'\n', '', str(content))
+
     soup = BeautifulSoup(content, 'html.parser')
+    soup.div.unwrap()
     joke_content = soup.find_all('div', class_='article block untagged mb15')
-    print joke_content
+
+    # print joke_content
 
     for i in range(0, len(joke_content)):
-        print joke_content[i].div.strings
+        print joke_content[i]
 
         # comments = soup.find_all('div', class_='main-text')
         # matchObj = re.sub(r'(.*)<br/>(.*)', str(joke_content), re.M | re.I)
