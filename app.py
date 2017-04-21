@@ -28,6 +28,5 @@ def add_user():
     # mongo.db.users.insert_one(post_user)
     return ""
 
-
 if __name__ == '__main__':
     app = app.run(debug=True)
