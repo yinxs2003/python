@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # !/usr/bin/python
 
-import __init__
-import sys
-import os
 import ConfigParser
-import time
-import root_path
 import datetime
+import os
+import time
+
 import demjson
+
+import root_path
 
 
 def getLogger(module_name):

@@ -13,6 +13,8 @@ for namepath in os.listdir(os.getcwd()):
         src_folder.append(_project_dir + os.sep + namepath)
 
 sys.path.extend(src_folder)
+
+
 # print(sys.path)
 
 
