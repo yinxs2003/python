@@ -69,7 +69,8 @@
 [ ] NodeJS学习
 
 20170505:
+ √ 微软云崩溃导致数据库slave无法启动，升级MariaDB集群到最新版本 @done (17-05-05 15:57)
  √ 1. 已验证rsyslog日志可以使用旧版认证方式连接到mongo数据库 @done (17-05-05 15:55)
-
+ √ 日志系统自动部署脚本 @done (17-05-05 17:01)
 计划任务:
   [ ] python + flask + mysql + celery + redis 
