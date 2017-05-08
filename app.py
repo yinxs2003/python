@@ -1,4 +1,5 @@
 from flask import Flask, request, session, redirect, render_template
+from flask import url_for
 from flask_login import LoginManager
 from flask_pymongo import PyMongo
 from flask_restful import abort
@@ -7,9 +8,11 @@ from util import CommonUtil
 
 app = Flask(__name__)
 app.config.update(
-    MONGO_URI='mongodb://172.27.12.67:27017/sun',
+    # MONGO_URI='mongodb://172.27.12.67:27017/sun',
+    MONGO_URI='mongodb://localhost:27017/sun',
     MONGO_CURSORCLASS='DictCursor',
 )
+app.config['SECRET_KEY'] = '<the super secret key comes here>'
 
 logger = CommonUtil.logger
 login_manager = LoginManager()
@@ -55,7 +58,8 @@ def login():
     request_user.setdefault("username", username)
     user_in_db = query_user(request_user)
     if user_in_db and user_in_db[0]['password'] == password:
-        return str(request_user)
+        session['username'] = username
+        return render_template("index.html")
     return "not a register"
 
 
@@ -71,9 +75,15 @@ def query_user(filter_doc):
     return user_list
 
 
-@app.route('/logout')
+# @app.route('/return_logout')
+# def return_logout():
+#     return redirect("/logout")
+
+
+@app.route("/logout")
 def logout():
     session.pop('username', None)
+    return redirect(url_for('return_login'))
 
 
 @app.route('/')
