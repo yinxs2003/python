@@ -1,6 +1,13 @@
-<!doctype html>
-<h1>Index</h1>
-logined user:  {{session.username}}<br/>
-<a href="/logout">logout</a>
-</label>
-</form>
+{% extends "base.html" %}
+{% block content %}
+    <h2>List of pages</h2>
+        <ul>
+            {% for page in pages %}
+                <li>
+                    <a href="{{ url_for("page", path=page.path) }}">{{ page.title }}</a>
+                </li>
+            {% else %}
+                <li>No post.</li>
+            {% endfor %}
+        </ul>
+{% endblock content %}

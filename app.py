@@ -1,5 +1,7 @@
+# coding=utf-8
 from flask import Flask, request, session, redirect, render_template
 from flask import url_for
+from flask_flatpages import FlatPages
 from flask_login import LoginManager
 from flask_pymongo import PyMongo
 from flask_restful import abort
@@ -8,11 +10,12 @@ from util import CommonUtil
 
 app = Flask(__name__)
 app.config.update(
-    # MONGO_URI='mongodb://172.27.12.67:27017/sun',
-    MONGO_URI='mongodb://localhost:27017/sun',
+    MONGO_URI='mongodb://admin:admin@172.27.12.67:27017/sun',
+    # MONGO_URI='mongodb://localhost:27017/sun',
     MONGO_CURSORCLASS='DictCursor',
 )
 app.config['SECRET_KEY'] = '<the super secret key comes here>'
+flatpages = FlatPages(app)
 
 logger = CommonUtil.logger
 login_manager = LoginManager()
@@ -21,23 +24,38 @@ login_manager.init_app(app)
 mongo = PyMongo(app)
 
 
-# session['username'] = 'admin'
+def checkLogin(func):
+    # 返回一个注解类
+    from functools import wraps
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        if not session.has_key('username') or session['username'] == 0:
+            # redirect = {"status": 302, "location": '/login.html'}
+            return render_template('login.html')
+        return func(*args, **kwargs)
+
+    return decorated_function
 
 
-@app.route('/index')
+@app.route('/')
+# @checkLogin
 def index():
-    return "Hello Flask"
+    pages = (p for p in flatpages if 'date' in p.meta)
+    return render_template('index.html', pages=pages)
+
+
+@app.route('/pages/<path:path>/')
+def page(path):
+    return render_template('page.html', page=flatpages.get_or_404(path))
 
 
 @app.route('/add_user', methods=['POST'])
+# @checkLogin
 def add_user():
-    # user = {'name': 'Michael', 'age': 18, 'scores': [{'course': 'Math', 'score': 76}]}
     post_data = request.get_json()
     logger.info(post_data)
     if post_data['username'] == '' or post_data['password'] == '':
         abort(400)
-    # if User.query.filter_by(username=username).first() is not None:
-    #     abort(400)  # existing user
     try:
         mongo.db['users'].insert_one(post_data)
         return "Inserted Successfully!"
@@ -63,11 +81,6 @@ def login():
     return "not a register"
 
 
-@app.route('/return_login', methods=['GET'])
-def return_login():
-    return render_template('login.html')
-
-
 def query_user(filter_doc):
     user_cursor = mongo.db['users'].find(filter_doc)
     user_list = [user for user in user_cursor]
@@ -75,22 +88,10 @@ def query_user(filter_doc):
     return user_list
 
 
-# @app.route('/return_logout')
-# def return_logout():
-#     return redirect("/logout")
-
-
 @app.route("/logout")
 def logout():
     session.pop('username', None)
     return redirect(url_for('return_login'))
-
-
-@app.route('/')
-def index_or_login():
-    if 'username' in session:
-        return redirect('/index')
-    return redirect('/return_login')
 
 
 if __name__ == '__main__':

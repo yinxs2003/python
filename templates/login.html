@@ -1,12 +1,13 @@
-<!doctype html>
-<h1>Sign In</h1>
-<form action="/login" method="post" name="login" class="form-horizontal well well-large">
-    username:<label>
-    <input name="username" type="text"/><br/>
-    password:<label>
-    <input name="password" type="password"><br>
-    <input type="submit">
-    <a href="/logout">logout</a>
-</label>
-</label>
-</form>
+{% extends "base.html" %}
+{% block content %}
+    <h2>List of pages</h2>
+        <ul>
+            {% for page in pages %}
+                <li>
+                    <a href="{{ url_for("page", path=page.path) }}">{{ page.title }}</a>
+                </li>
+            {% else %}
+                <li>No post.</li>
+            {% endfor %}
+        </ul>
+{% endblock content %}
